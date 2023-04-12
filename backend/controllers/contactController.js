@@ -1,10 +1,11 @@
 const asyncHandler = require("express-async-handler") // to avoid try catch blocks
-
+const Contact = require("../models/contactModel")
 //@desc Get all contacts
 //@route GET /api/contacts
 //@access public
 const getContacts = asyncHandler( async (req, res) => {
-  res.status(200).json({ message: "Get all Contacts" });
+  const contacts = Contact.find();
+  res.status(200).json(contacts);
 });
 //@desc create new contact
 //@route POST /api/contacts
