@@ -2,7 +2,9 @@
 const asyncHandler = require("express-async-handler") // to avoid try catch blocks
 const User = require("../models/userModel");
 const bcrypt = require("bcrypt");
-//@desc Register a user
+const jwt = require("jsonwebtoken")
+
+//! Register a user
 //@route GET /api/users/register
 //@access public
 const registerUser = asyncHandler( async (req, res) => {
@@ -30,13 +32,39 @@ const registerUser = asyncHandler( async (req, res) => {
   }
     res.json({ message: "Register the user" });
 });
-//@desc Login user
+
+
+//! Login user
 //@route POST/api/users/login
 //@access public
 const loginUser = asyncHandler( async (req, res) => {
-    res.json({ message: "Login user" });
+  const {email, password} = req.body;
+  if(!email || !password) {
+    res.status(400);
+    throw new Error("All fields are mandatory!")
+  }
+  const user = await User.findOne({email})
+  //compare password with hashedPassword
+   if(user && (await bcrypt.compare(password, user.password ))){
+    const accessToken = jwt.sign(
+      {
+        user: {
+          username: user.username,
+          email: user.email,
+          id: user.id,
+        },
+      },
+      process.env.ACCESS_TOKEN_SECRET, {expiredIn: "1m"}
+    );
+    res.status(200).json({accessToken })
+   }else{
+    res.status(401)
+    throw new Error("Email or Password is not valid")
+   }
 });
-//@desc current user info
+
+
+//! current user info
 //@route POST/api/users/current
 //@access //!private
 const currentUser = asyncHandler(async (req, res) => {
