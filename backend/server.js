@@ -1,7 +1,9 @@
 const express = require('express');
 const errorHandler = require('./middleware/errorHandler');
 const connectDb = require('./config/dbConnection');
-const dotenv = require('dotenv').config();
+const Contact = require('./models/contactModel')
+require('dotenv').config();
+
 
 connectDb()
 
@@ -11,9 +13,12 @@ const port = 3000;
 
 
 app.use(express.json())//Parser to retrieve JSON data from client side
-app.use("/api/contacts", require("./routes/contactRoutes"));
+
 app.use(errorHandler);
 
+//* Routes
+app.use("/api/contacts", require("./routes/contactRoutes"));
+app.use("/api/users", require("./routes/userRoutes"));
 
 
 
