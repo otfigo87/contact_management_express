@@ -5,7 +5,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken")
 
 //! Register a user
-//@route GET /api/users/register
+//@route Post /api/users/register
 //@access public
 const registerUser = asyncHandler( async (req, res) => {
   const {username, email, password} = req.body ;
@@ -13,7 +13,8 @@ const registerUser = asyncHandler( async (req, res) => {
     res.status(400);
     throw new Error("All field are required!")
   }
-  const userAvailable = await User.findOne({email})
+  //check if the email already used by another user
+  const userAvailable = await User.findOne({ email })
   if(userAvailable){
     res.status(400);
     throw new Error("Email already registered!")
